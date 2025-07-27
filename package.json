@@ -21,6 +21,7 @@
     "redis": "^4.6.13"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/koa": "^2.15.0",
     "@types/koa__cors": "^5.0.0",
     "@types/koa__router": "^12.0.4",
