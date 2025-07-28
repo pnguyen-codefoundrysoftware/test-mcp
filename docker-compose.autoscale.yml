@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Redis for shared session state
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Stateless MCP Server (can be scaled)
+  mcp-server:
+    build: .
+    environment:
+      - REDIS_URL=redis://redis:6379
+      - PORT=3000
+    depends_on:
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    # No ports exposed directly - use load balancer
+
+  # Load Balancer (simulates cloud load balancer)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx-autoscale.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - mcp-server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  redis_data:
+
+# To simulate autoscaling, run:
+# docker-compose -f docker-compose.autoscale.yml up -d
+# docker-compose -f docker-compose.autoscale.yml up -d --scale mcp-server=3
+# docker-compose -f docker-compose.autoscale.yml up -d --scale mcp-server=5 
