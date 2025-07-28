@@ -6,11 +6,14 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/server.js",
+    "start:multi": "node dist/multiNodeServer.js",
     "dev": "ts-node src/server.ts",
+    "dev:multi": "ts-node src/multiNodeServer.ts",
     "lint": "eslint src/**/*.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "-": "^0.0.1",
     "@koa/cors": "^5.0.0",
     "@koa/router": "^12.0.1",
     "@modelcontextprotocol/sdk": "^1.17.0",
@@ -26,6 +29,7 @@
     "@types/koa__cors": "^5.0.0",
     "@types/koa__router": "^12.0.4",
     "@types/node": "^20.11.0",
+    "@types/redis": "^4.0.10",
     "@typescript-eslint/eslint-plugin": "^6.19.0",
     "@typescript-eslint/parser": "^6.19.0",
     "eslint": "^8.56.0",
